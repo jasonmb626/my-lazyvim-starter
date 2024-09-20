@@ -126,6 +126,9 @@ vim.keymap.set("n", "<leader>odd", function()
     vim.api.nvim_buf_delete(current_buf, {})
   end
 end, { desc = "Delete note permanantely." })
+vim.keymap.set("n", "<leader>oo", function()
+  require("obsidian.commands.toggle_checkbox")(obsidian_client)
+end, { desc = "Toggle Checkbox" })
 
 local olog = require("plenary.log").new({
   plugin = "me",
@@ -173,4 +176,4 @@ end, { desc = "Get backlinks to this note." })
 require("obsidian.note"):add_field("hubs", { "[[]]" })
 require("obsidian.note"):add_field("urls", {})
 
--- log.info(vim.inspect(obsidian_client))
+-- olog.info(vim.inspect(obsidian_client))
