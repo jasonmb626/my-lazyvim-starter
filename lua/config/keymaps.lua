@@ -139,7 +139,12 @@ vim.keymap.set("n", "<leader>ob", function()
   require("obsidian.commands.backlinks")(obsidian_client)
 end, { desc = "Get backlinks to this note." })
 
+vim.keymap.set("v", "<leader>ox", function()
+  print("This doesn't work yet")
+  -- local extracted = require("obsidian.commands.extract_note")(obsidian_client, {})
+end, { desc = "Extract to note." })
+
 require("obsidian.note"):add_field("hubs", { "[[]]" })
 require("obsidian.note"):add_field("urls", {})
 
--- olog.info(vim.inspect(obsidian_client))
+-- olog.info(vim.inspect(require("which-key")))
