@@ -127,15 +127,50 @@ vim.keymap.set("n", "<leader>odd", function()
   end
 end, { desc = "Delete note permanantely." })
 
+local olog = require("plenary.log").new({
+  plugin = "me",
+  level = "info",
+})
+
+vim.keymap.set("n", "<leader>ob", function()
+  local current_file = vim.fn.expand("%:p'")
+  local note = require("obsidian.note").from_file(current_file)
+  local backlinks = obsidian_client:find_backlinks(note)
+  local entries = {}
+  for _, matches in ipairs(backlinks) do
+    for _, match in ipairs(matches.matches) do
+      entries[#entries + 1] = {
+        value = { path = matches.path, line = match.line },
+        filename = tostring(matches.path),
+        lnum = match.line,
+      }
+    end
+  end
+
+  local opts = {}
+  ---@type string
+  local prompt_title
+  if opts.anchor then
+    prompt_title = string.format("Backlinks to '%s%s'", note.id, opts.anchor)
+  elseif opts.block then
+    prompt_title = string.format("Backlinks to '%s#%s'", note.id, util.standardize_block(opts.block))
+  else
+    prompt_title = string.format("Backlinks to '%s'", note.id)
+  end
+
+  local picker = obsidian_client:picker()
+  vim.schedule(function()
+    olog.info(vim.inspect(entries))
+    picker:pick(entries, {
+      prompt_title = prompt_title,
+      callback = function(value)
+        util.open_buffer(value.path, { line = value.line })
+      end,
+    })
+  end)
+end, { desc = "Get backlinks to this note." })
+
 require("obsidian.note"):add_field("hubs", { "[[]]" })
 require("obsidian.note"):add_field("urls", {})
 
-require("neo-tree").setup({
-  filesystem = {
-    window = {
-      mappings = {
-        ["/"] = "fuzzy_finder",
-      },
-    },
-  },
-})
+-- log.info(vim.inspect(obsidian_client))
