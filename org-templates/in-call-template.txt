@@ -1,0 +1,8 @@
+* TODO %^{Description} :IN_CALL:
+  Store: 
+  Incident: 
+  :LOGBOOK:
+  - Added: %U
+  :END:
+
+  %?

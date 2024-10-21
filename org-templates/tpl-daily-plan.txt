@@ -1,0 +1,12 @@
+** TODO DR BOOTUP [/]
+- [ ] Add Meetings from Outlook 365 to today's journal.org entry.
+- [ ] Review all TODO=? entries and assign them proper todos.
+- [ ] See if there are any updates on incidents sent to other groups.
+- [ ] Did any blockers clear? If so change status to NEXT, postpone reminder if still waiting/blocked and it's overdue.
+- [ ] Are delaged tasks finished? If so mark as DONE, or if overdue schedule a supportive action.
+- [ ] Schedule tasks with no date.
+- [ ] Clock in
+- [ ] Review TCS Email
+** Clocktable
+#+BEGIN: clocktable :tstart "<%<%Y-%m-%d %a> 00:00>" :tend "<%<%Y-%m-%d %a> 23:59>" :scope agenda :tags t :stepskip0 t :fileskip0 t
+#+END:

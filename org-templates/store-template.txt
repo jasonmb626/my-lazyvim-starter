@@ -1,0 +1,7 @@
+%^{Store #}
+  :PROPERTIES:
+  :ID: %\1
+  :CREATED: %U
+  :END:
+  
+  %?
