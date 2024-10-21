@@ -11,7 +11,6 @@ services:
     volumes:
       - ./zettelkasten:/home/app/Documents/zettelkasten:z
       - dotlocal:/home/app/.local
-      - /etc/localtime:/etc/localtime:ro
       - $XDG_RUNTIME_DIR/wayland-0:/tmp/wayland-0:z
       - ./nvim_config:/home/app/.config/nvim:z
     stdin_open: true

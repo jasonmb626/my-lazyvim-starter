@@ -13,19 +13,16 @@ ENV ZETTEL_BASE=/home/app/Documents/zettelkasten
 ENV ORG_TEMPLATES_DIR=/home/app/.config/nvim/org-templates
 
 COPY requirements.txt /tmp
-RUN apk add -U py3-pip npm bash \
-         git \ 
-         lua-dev luarocks stylua \
-         lazygit openssh \
-         tmux neovim neovim-doc \
-         procps \
-         tmux \
-         ripgrep \
-         alpine-sdk \
-         tree-sitter tree-sitter-cli \
-         wl-clipboard cmake \
-         stow sudo task \
-         unzip gzip fd mercurial wget \
+RUN apk add -U bash tmux sudo \
+        openssh unzip gzip wget \
+        stow sudo tzdata  task \
+        alpine-sdk cmake \
+        wl-clipboard \
+        git lazygit \
+        py3-pip npm \ 
+        neovim neovim-doc lua-dev luarocks stylua \
+        tree-sitter tree-sitter-cli \
+        procps ripgrep fd mercurial \
     && chmod 777 /tmp \
     && curl -o /tmp/timew.tgz -L -O https://github.com/GothenburgBitFactory/timewarrior/releases/download/v1.7.1/timew-1.7.1.tar.gz \
     && cd /tmp && tar xzf timew.tgz && cd /tmp/timew-1.7.1 && cmake -DCMAKE_BUILD_TYPE=Release . && make && make install \
@@ -45,8 +42,8 @@ RUN apk add -U py3-pip npm bash \
     && git clone https://github.com/tmux-plugins/tpm /home/app/.bin/tpm \
     && git clone https://github.com/jasonmb626/dotfiles-dev.git /home/app/.dotfiles \
     && curl -s https://ohmyposh.dev/install.sh | bash -s -- -d /home/app/.bin \
-    && git clone https://github.com/dracula/oh-my-posh.git /tmp/oh-my-posh-dracula
-RUN mkdir -p /home/app/.themes && cp /tmp/oh-my-posh-dracula/dracula.omp.json /home/app/.themes && touch /home/app/.bash_profile  \
+    && git clone https://github.com/dracula/oh-my-posh.git /tmp/oh-my-posh-dracula \
+    && mkdir -p /home/app/.themes && cp /tmp/oh-my-posh-dracula/dracula.omp.json /home/app/.themes && touch /home/app/.bash_profile  \
     && mkdir -p /home/app/.config && touch /home/app/.config/.want_alt_tmux_prefix && touch /home/app/.config/.want_docker_ssh && touch /home/app/.config/.want_timew_hook \
     && chown -R app:app /home/app && rm -fr /tmp/* \
     && cat >/home/app/.bash_profile <<EOF
