@@ -53,6 +53,13 @@ if [ -n "\$BASH_VERSION" -a -n "\$PS1" ]; then
     . "\$HOME/.bashrc"
     fi
 fi
+export GDM_LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
+export XDG_CACHE_HOME=/home/app/.local/cache
+export TASKRC=~/.config/task/.taskrc
+export TASKDATA=~/.local/share/task/
+export ZETTEL_BASE=/home/app/Documents/zettelkasten
+export ORG_TEMPLATES_DIR=/home/app/.config/nvim/org-templates
 EOF
 
 WORKDIR /home/app/Documents/zettelkasten
