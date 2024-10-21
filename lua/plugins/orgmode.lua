@@ -31,6 +31,11 @@ return {
         org_agenda_files = zettel_base .. "/**/*",
         org_default_notes_file = zettel_base .. "/refile.org",
         org_use_tag_inheritance = false,
+        mappings = {
+          org = {
+            org_toggle_checkbox = "<leader>o<CR>",
+          },
+        },
         org_todo_keywords = {
           "TODO(t!)",
           "NEXT(n!)",
