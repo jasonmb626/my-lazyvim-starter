@@ -74,12 +74,3 @@ end, { desc = "Move buffer backward in bufferline." })
 vim.keymap.set("n", "<leader>b>", function()
   require("bufferline").move(1)
 end, { desc = "Move buffer forward in bufferline." })
-
-local olog = require("plenary.log").new({
-  plugin = "me",
-  level = "info",
-})
-vim.keymap.set("n", "<leader>bL", function()
-  orgmode = require("orgmode")
-  olog.info(vim.inspect(orgmode))
-end, { desc = "Move buffer forward in bufferline." })
