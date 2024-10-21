@@ -6,3 +6,4 @@ debug
 foo.*
 *.log
 data
+Dockerfiles/nvim_config

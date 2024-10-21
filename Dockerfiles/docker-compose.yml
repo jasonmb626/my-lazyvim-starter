@@ -1,0 +1,29 @@
+services:
+  dev:
+    build:
+      context: .
+      args:
+        #Replace with results of $(id -u) and $(id -g) if necessary
+        UID: 1000
+        GRP: 1000
+    container_name: nvim-org
+    restart: always
+    volumes:
+      - ./zettelkasten:/home/app/Documents/zettelkasten:z
+      - dotlocal:/home/app/.local
+      - /etc/localtime:/etc/localtime:ro
+      - $XDG_RUNTIME_DIR/wayland-0:/tmp/wayland-0:z
+      - ./nvim_config:/home/app/.config/nvim:z
+    stdin_open: true
+    tty: true
+    ports:
+      - "22:22"
+    user: 1000:1000 #Replace with results of $(id -u) and $(id -g) if necessary
+    environment:
+      XDG_RUNTIME_DIR: /tmp
+      TERM: xterm-256color
+      XDG_DATA_DIRS: /tmp/XDG_DATA_DIRS
+        #    security_opt:  #This this if copying to system clipboard fails.  Needed with moby engine but not Docker proper.
+        #      - label:type:container_runtime_t
+volumes:
+  dotlocal:
