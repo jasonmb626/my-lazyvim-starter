@@ -61,5 +61,5 @@ EOF
 WORKDIR /home/app/Documents/zettelkasten
 USER app:app
 RUN cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit \
-    && mkdir -p /home/app/Documents/zettelkasten
+    && mkdir -p /home/app/Documents/zettelkasten && dos2unix /home/app/.bash_profile
 CMD ["bash"]
