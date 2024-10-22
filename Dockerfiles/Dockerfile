@@ -65,6 +65,7 @@ WORKDIR /home/app/Documents/zettelkasten
 USER app:app
 RUN cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit && stow emacs \
     && mkdir -p /home/app/Documents/zettelkasten && dos2unix /home/app/.bash_profile \
+    && mkdir -p /home/app/.config/nvim \
     && cd /home/app/.config/emacs && mkdir eln-cache elpaca \
     && touch /home/app/.config/emacs/recentf && touch /home/app/.config/emacs/projectile-bookmarks.eld && touch /home/app/.config/emacs/sessions
 CMD ["bash"]
