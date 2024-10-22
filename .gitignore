@@ -7,3 +7,11 @@ foo.*
 *.log
 data
 Dockerfiles/nvim_config
+Dockerfiles/eln-cache
+Dockerfiles/elpaca
+Dockerfiles/auto-save-list
+Dockerfiles/emacs_sessions
+Dockerfiles/zettelkasten
+Dockerfiles/emacs_recentf
+Dockerfiles/projectile-bookmarks.eld
+
