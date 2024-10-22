@@ -41,7 +41,7 @@ RUN sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' 
     && mkdir -p /home/app/.local \
     && git clone https://github.com/tmux-plugins/tpm /home/app/.bin/tpm \
     && git clone https://github.com/jasonmb626/dotfiles-dev.git /home/app/.dotfiles \
-    && mkdir -p /home/app/.config && touch /home/app/.bash_profile  && cd /home/app/.config && touch {.want_alt_tmux_prefix, want_docker_ssh, want_timew_hook}\
+    && mkdir -p /home/app/.config && touch /home/app/.bash_profile  && cd /home/app/.config && touch .want_alt_tmux_prefix .want_docker_ssh .want_timew_hook \
     && chown -R app:app /home/app && rm -fr /tmp/* \
     && cat >/home/app/.bash_profile <<EOF
 if [ -n "\$BASH_VERSION" -a -n "\$PS1" ]; then
@@ -65,7 +65,7 @@ WORKDIR /home/app/Documents/zettelkasten
 USER app:app
 RUN cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit && stow emacs \
     && mkdir -p /home/app/Documents/zettelkasten && dos2unix /home/app/.bash_profile \
-    && cd /home/app/.config/emacs && mkdir -p {eln-cache, elpaca} \
+    && cd /home/app/.config/emacs && mkdir eln-cache, elpaca \
     && touch /home/app/.config/emacs/recentf && touch /home/app/.config/emacs/projectile-bookmarks.eld && touch /home/app/.config/emacs/sessions
 CMD ["bash"]
 
