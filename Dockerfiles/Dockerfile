@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:latest
 
 ARG UID=1000
 ARG GID=1000
@@ -20,13 +20,13 @@ RUN apk add -U bash tmux sudo \
         wl-clipboard \
         git lazygit \
         py3-pip npm \ 
-        neovim neovim-doc lua-dev luarocks stylua \
+        neovim neovim-doc lua-dev luarocks stylua emacs-nox \
         tree-sitter tree-sitter-cli \
-        procps ripgrep fd mercurial \
-    && chmod 777 /tmp \
+        procps ripgrep fd mercurial
+RUN chmod 777 /tmp \
     && curl -o /tmp/timew.tgz -L -O https://github.com/GothenburgBitFactory/timewarrior/releases/download/v1.7.1/timew-1.7.1.tar.gz \
-    && cd /tmp && tar xzf timew.tgz && cd /tmp/timew-1.7.1 && cmake -DCMAKE_BUILD_TYPE=Release . && make && make install \
-    && sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' /etc/passwd \
+    && cd /tmp && tar xzf timew.tgz && cd /tmp/timew-1.7.1 && cmake -DCMAKE_BUILD_TYPE=Release . && make && make install
+RUN sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' /etc/passwd \
     && addgroup -g ${GID} app \
     && adduser -D -u ${UID} -G app -s /bin/bash app \
     && echo "app:" | chpasswd -e \
@@ -41,10 +41,7 @@ RUN apk add -U bash tmux sudo \
     && mkdir -p /home/app/.local \
     && git clone https://github.com/tmux-plugins/tpm /home/app/.bin/tpm \
     && git clone https://github.com/jasonmb626/dotfiles-dev.git /home/app/.dotfiles \
-    && curl -s https://ohmyposh.dev/install.sh | bash -s -- -d /home/app/.bin \
-    && git clone https://github.com/dracula/oh-my-posh.git /tmp/oh-my-posh-dracula \
-    && mkdir -p /home/app/.themes && cp /tmp/oh-my-posh-dracula/dracula.omp.json /home/app/.themes && touch /home/app/.bash_profile  \
-    && mkdir -p /home/app/.config && touch /home/app/.config/.want_alt_tmux_prefix && touch /home/app/.config/.want_docker_ssh && touch /home/app/.config/.want_timew_hook \
+    && mkdir -p /home/app/.config && touch /home/app/.bash_profile  && cd /home/app/.config && touch {.want_alt_tmux_prefix, want_docker_ssh, want_timew_hook}\
     && chown -R app:app /home/app && rm -fr /tmp/* \
     && cat >/home/app/.bash_profile <<EOF
 if [ -n "\$BASH_VERSION" -a -n "\$PS1" ]; then
@@ -62,8 +59,24 @@ export ZETTEL_BASE=/home/app/Documents/zettelkasten
 export ORG_TEMPLATES_DIR=/home/app/.config/nvim/org-templates
 EOF
 
+#RUN echo "app:" | chpasswd
+
 WORKDIR /home/app/Documents/zettelkasten
 USER app:app
-RUN cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit \
-    && mkdir -p /home/app/Documents/zettelkasten && dos2unix /home/app/.bash_profile
+RUN cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit && stow emacs \
+    && mkdir -p /home/app/Documents/zettelkasten && dos2unix /home/app/.bash_profile \
+    && cd /home/app/.config/emacs && mkdir -p {eln-cache, elpaca} \
+    && touch /home/app/.config/emacs/recentf && touch /home/app/.config/emacs/projectile-bookmarks.eld && touch /home/app/.config/emacs/sessions
 CMD ["bash"]
+
+#If cloning rainbow-mode hangs exit and try cloning it manually via https instead of git:
+#git clone --single-branch --branch externals/rainbow-mode https://git.savannah.gnu.org/git/emacs/elpa.git /home/app/.config/emacs/elpaca/repos/rainbow-mode
+#If lsp-mode hangs/fails try cloning it manually with depth 1:
+#git clone --depth 1 https://github.com/emacs-lsp/lsp-mode.git /home/app/.config/emacs/elpaca/repos/lsp-mode/
+
+#Consider limiting IP ssh access
+#https://serverfault.com/questions/680780/block-all-but-a-few-ips-with-firewalld
+#firewall-cmd --zone=internal --add-service=ssh
+#firewall-cmd --zone=internal --add-source=192.168.56.105/32
+#firewall-cmd --zone=internal --add-source=192.168.56.120/32
+#firewall-cmd --zone=public --remove-service=ssh
