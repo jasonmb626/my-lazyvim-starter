@@ -13,11 +13,6 @@ services:
       - dotlocal:/home/app/.local
       - $XDG_RUNTIME_DIR/wayland-0:/tmp/wayland-0:z
       - ./nvim_config:/home/app/.config/nvim:z
-      - emacs_eln-cache:/home/app/.config/emacs/eln-cache
-      - elpaca:/home/app/.config/emacs/elpaca
-      - ./emacs_recentf:/home/app/.config/emacs/emacs_recentf:z
-      - ./projectile-bookmarks.eld:/home/app/.config/emacs/projectile-bookmarks.eld:z
-      - ./emacs_sessions:/home/app/.config/emacs/sessions:z
     stdin_open: true
     tty: true
     ports:

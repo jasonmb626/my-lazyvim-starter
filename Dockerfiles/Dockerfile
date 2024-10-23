@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM fedora:latest AS base
 
 ARG UID=1000
 ARG GID=1000
@@ -11,37 +11,30 @@ ENV TASKRC=~/.config/task/.taskrc
 ENV TASKDATA=~/.local/share/task/
 ENV ZETTEL_BASE=/home/app/Documents/zettelkasten
 ENV ORG_TEMPLATES_DIR=/home/app/.config/nvim/org-templates
+ENV EDITOR=vim
 
 COPY requirements.txt /tmp
-RUN apk add -U bash tmux sudo \
-        openssh unzip gzip wget \
-        stow sudo tzdata  task \
-        alpine-sdk cmake \
-        wl-clipboard \
-        git lazygit \
-        py3-pip npm \ 
-        neovim neovim-doc lua-dev luarocks stylua emacs-nox \
-        tree-sitter tree-sitter-cli \
-        procps ripgrep fd mercurial
-RUN chmod 777 /tmp \
-    && curl -o /tmp/timew.tgz -L -O https://github.com/GothenburgBitFactory/timewarrior/releases/download/v1.7.1/timew-1.7.1.tar.gz \
-    && cd /tmp && tar xzf timew.tgz && cd /tmp/timew-1.7.1 && cmake -DCMAKE_BUILD_TYPE=Release . && make && make install
+RUN echo -e "max_parallel_downloads=10\nfastestmirror=True" >> /etc/dnf/dnf.conf && dnf install -y dnf5 'dnf-command(copr)' && dnf update -y
+RUN chmod 777 /tmp && dnf copr enable atim/lazygit -y \
+     && dnf install -y tmux openssh unzip wl-clipboard \
+                       python3-pip nodejs-npm luarocks \
+                       git lazygit stow dos2unix \
+                       task2 timew taskopen vim \
+                       neovim emacs-nox mercurial fzf fd-find
 RUN sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' /etc/passwd \
-    && addgroup -g ${GID} app \
-    && adduser -D -u ${UID} -G app -s /bin/bash app \
-    && echo "app:" | chpasswd -e \
+    && groupadd -g ${GID} app \
+    && useradd -u ${UID} -g ${GID} app && rm /home/app/.bashrc \
     && mkdir -p /etc/sudoers.d && echo 'app ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers.d/app \
     && touch /run/sshd.pid && chmod 777 /run/sshd.pid \
     && ssh-keygen -A && echo -e 'PasswordAuthentication yes\nPermitEmptyPasswords yes' >> /etc/ssh/sshd_config \
-    && ln -s /usr/share/zoneinfo/America/Chicago /etc/localtime \
+    && ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime \
+    && pip3 install --upgrade pip && pip3 install pynvim pylint tzdata vit && npm i -g neovim \
     && python3 -m venv /home/app/.venvs/app && source /home/app/.venvs/app/bin/activate \
-    && pip3 install --upgrade pip \
     && pip3 install -r /tmp/requirements.txt && rm /tmp/requirements.txt \
-    && pip3 install pynvim pylint tzdata vit \
     && mkdir -p /home/app/.local \
     && git clone https://github.com/tmux-plugins/tpm /home/app/.bin/tpm \
     && git clone https://github.com/jasonmb626/dotfiles-dev.git /home/app/.dotfiles \
-    && mkdir -p /home/app/.config && touch /home/app/.bash_profile  && cd /home/app/.config && touch .want_alt_tmux_prefix .want_docker_ssh .want_timew_hook \
+    && mkdir -p /home/app/.config && touch /home/app/.bash_profile  && cd /home/app/.config && touch .want_docker_ssh .want_timew_hook \
     && chown -R app:app /home/app && rm -fr /tmp/* \
     && cat >/home/app/.bash_profile <<EOF
 if [ -n "\$BASH_VERSION" -a -n "\$PS1" ]; then
@@ -57,16 +50,18 @@ export TASKRC=~/.config/task/.taskrc
 export TASKDATA=~/.local/share/task/
 export ZETTEL_BASE=/home/app/Documents/zettelkasten
 export ORG_TEMPLATES_DIR=/home/app/.config/nvim/org-templates
+export EDITOR=vim
 EOF
 
-#RUN echo "app:" | chpasswd
+RUN echo "app:" | chpasswd
 
 WORKDIR /home/app/Documents/zettelkasten
 USER app:app
 RUN cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit && stow emacs \
     && mkdir -p /home/app/Documents/zettelkasten && dos2unix /home/app/.bash_profile \
     && mkdir -p /home/app/.config/nvim \
-    && cd /home/app/.config/emacs && mkdir eln-cache elpaca && touch recentf projectile-bookmarks.eld sessions
+    && cd /home/app/.config/emacs && mkdir eln-cache elpaca && touch recentf projectile-bookmarks.eld sessions \
+    && touch .want_alt_tmux_prefix
 CMD ["bash"]
 
 #If cloning rainbow-mode hangs exit and try cloning it manually via https instead of git:
