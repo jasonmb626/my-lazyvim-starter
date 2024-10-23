@@ -1,12 +1,14 @@
 #!/bin/bash
 
 set -u
+DEBUG=false
+
+$DEBUG && mkdir -p ~/.cache
 
 #Given an input .task file alter the tag to zero or one from a unique list. Meant to be ultimately called from neovim via keybinding when "task edit" called and opened in neovim.
 
 uniq_tag_list_str="INCIDENT,NUCLEUS_INC,TRAINING,EMAIL_SUPPORT,SCRIPTING,CUST_MEETING,TCS_MEETING,CRQ,MISC,W_O_REQ,PTO"
 
-echo "$@" >>/home/jason/.cache/set_uniq_tag.log
 taskfile=
 if [[ $# -gt 0 ]]; then
   taskfile="$1"
@@ -35,9 +37,9 @@ tag_line=$(grep -P "^\s*Tags:" "$taskfile")
 pre=$(echo "$tag_line" | sed -r "s/^([[:space:]]*Tags:[[:space:]]*)(.*$)/\1/")
 tags=$(echo "$tag_line" | sed -r "s/^([[:space:]]*Tags:[[:space:]]*)(.*)$/\2/")
 for itag in "${uniq_tag_list[@]}"; do
-  echo "tags before remove *$tags*" >>/home/jason/.cache/set_uniq_tag.log
+  $DEBUG && echo "tags before remove *$tags*" >>/home/jason/.cache/set_uniq_tag.log
   tags=$(echo "$tags" | sed -r -e "s/$itag//" -e 's/  / /g' -e 's/[[:space:]]$//' -e 's/^[[:space:]]//')
-  echo "tags after remove *$tags*" >>/home/jason/.cache/set_uniq_tag.log
+  $DEBUG && echo "tags after remove *$tags*" >>/home/jason/.cache/set_uniq_tag.log
 done
 
 if [[ ! -z $tags ]]; then
@@ -45,5 +47,5 @@ if [[ ! -z $tags ]]; then
 fi
 tags="${tags}${tag}"
 
-echo "Running sed -i -r \"s/^[[:space:]]*Tags:.*$/${pre}${tags}/\"" >>/home/jason/.cache/set_uniq_tag.log
+$DEBUG && echo "Running sed -i -r \"s/^[[:space:]]*Tags:.*$/${pre}${tags}/\"" >>~/.cache/set_uniq_tag.log
 sed -i -r "s/^[[:space:]]*Tags:.*$/${pre}${tags}/" "$taskfile"
