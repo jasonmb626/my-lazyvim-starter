@@ -74,3 +74,13 @@ end, { desc = "Move buffer backward in bufferline." })
 vim.keymap.set("n", "<leader>b>", function()
   require("bufferline").move(1)
 end, { desc = "Move buffer forward in bufferline." })
+
+local olog = require("plenary.log").new({
+  plugin = "me",
+  level = "info",
+})
+vim.api.nvim_create_autocmd({ "VimEnter" }, {
+  callback = function(ev)
+    olog.info(vim.inspect(ev))
+  end,
+})
