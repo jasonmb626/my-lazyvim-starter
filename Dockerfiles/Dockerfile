@@ -42,7 +42,7 @@ RUN sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' 
     && git clone https://github.com/tmux-plugins/tpm /home/app/.bin/tpm \
     && git clone https://github.com/jasonmb626/dotfiles-dev.git /home/app/.dotfiles \
     && mkdir -p /home/app/.config && touch /home/app/.bash_profile  && cd /home/app/.config && touch .want_timew_hook \
-    && chown -R app:app /home/app && rm -fr /tmp/* \
+    && mkdir -p /home/app/Documents/zettelkasten && chown -R app:app /home/app && rm -fr /tmp/* \
     && cat >/home/app/.bash_profile <<EOF
 if [ -n "\$BASH_VERSION" -a -n "\$PS1" ]; then
     # include .bashrc if it exists
@@ -60,15 +60,13 @@ export ORG_TEMPLATES_DIR=/home/app/.config/nvim/org-templates
 export EDITOR=vim
 EOF
 
-RUN echo "app:" | chpasswd -e
+RUN echo "app:" | chpasswd -e && touch /home/app/.config/.want_docker_ssh
 
 WORKDIR /home/app/Documents/zettelkasten
 USER app:app
 RUN cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit && stow taskopen \
-    && mkdir -p /home/app/Documents/zettelkasten && dos2unix /home/app/.bash_profile \
-    && mkdir -p /home/app/.config/nvim
-RUN touch /home/app/.config/.want_alt_tmux_prefix
-RUN touch /home/app/.config/.want_docker_ssh
+    && dos2unix /home/app/.bash_profile && mkdir -p /home/app/.config/nvim
+#RUN touch /home/app/.config/.want_alt_tmux_prefix
 CMD ["bash"]
 
 #Consider limiting IP ssh access
