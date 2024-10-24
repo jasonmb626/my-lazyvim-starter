@@ -10,9 +10,10 @@ services:
     restart: always
     volumes:
       - ./zettelkasten:/home/app/Documents/zettelkasten:z
-      - dotlocal:/home/app/.local
       - $XDG_RUNTIME_DIR/wayland-0:/tmp/wayland-0:z
-      - ./nvim_config:/home/app/.config/nvim:z
+      - dotlocal:/home/app/.local
+      - dotfiles:/home/app/.dotfiles
+      - nvim_config:/home/app/.config/nvim
     stdin_open: true
     tty: true
     ports:
@@ -26,5 +27,5 @@ services:
         #      - label:type:container_runtime_t
 volumes:
   dotlocal:
-  emacs_eln-cache:
-  elpaca:
+  dotfiles:
+  nvim_config:
