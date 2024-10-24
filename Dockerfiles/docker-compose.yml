@@ -9,8 +9,7 @@ services:
     container_name: nvim-org
     restart: always
     volumes:
-      - ./zettelkasten:/home/app/Documents/zettelkasten:z
-      - $XDG_RUNTIME_DIR/wayland-0:/tmp/wayland-0:z
+      - zettelkasten:/home/app/Documents/zettelkasten
       - dotlocal:/home/app/.local
       - dotfiles:/home/app/.dotfiles
       - nvim_config:/home/app/.config/nvim
@@ -29,3 +28,4 @@ volumes:
   dotlocal:
   dotfiles:
   nvim_config:
+  zettelkasten:
