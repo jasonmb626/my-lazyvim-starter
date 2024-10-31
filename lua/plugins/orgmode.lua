@@ -6,21 +6,6 @@ return {
     config = function()
       local zettel_base = os.getenv("ZETTEL_BASE") or "~/Documents/zettelkasten"
       local useful = require("config.useful")
-      local templates_dir = os.getenv("ORG_TEMPLATES_DIR") or "~/.config/nvim/org-templates"
-      local tpl_daily = useful.readAll(templates_dir .. "/tpl-daily-plan.txt")
-      local store_template = useful.readAll(templates_dir .. "/store-template.txt")
-      local inc_template = useful.readAll(templates_dir .. "/inc-template.txt")
-      local script_template = useful.readAll(templates_dir .. "/script-template.txt")
-      local custom_datetree = {
-        tree_type = "custom",
-        tree = {
-          {
-            format = "%Y-%m-%d %A",
-            pattern = "^(%d%d%d%d)%-(%d%d)%-(%d%d).*$",
-            order = { 1 },
-          },
-        },
-      }
       local olog = require("plenary.log").new({
         plugin = "me",
         level = "info",
@@ -53,77 +38,6 @@ return {
           "DONE(d!)",
         },
         org_log_into_drawer = "LOGBOOK",
-        org_capture_templates = {
-          s = {
-            description = "Script",
-            template = script_template,
-            target = zettel_base .. "/journal.org",
-            headline = "Capture",
-          },
-          S = {
-            description = "Store",
-            template = store_template,
-            target = zettel_base .. "/journal.org",
-            headline = "Capture",
-          },
-          I = {
-            description = "Incident",
-            template = inc_template,
-            target = zettel_base .. "/journal.org",
-            headline = "Capture",
-          },
-          t = {
-            description = "TODO entry",
-            template = "* TODO %^{Description} :NEW:\n  :LOGBOOK:\n  - Added: %U\n  :END:\n \n%?",
-            target = zettel_base .. "/journal.org",
-            headline = "Capture",
-          },
-          d = {
-            description = "Daily plan",
-            template = tpl_daily,
-            target = zettel_base .. "/journal.org",
-            datetree = custom_datetree,
-          },
-          m = "Meetings",
-          mw = {
-            description = "Workarounds (CSS scripts/jobs)",
-            template = "* Workarounds (CSS scripts/jobs) :CUST_MEETING:\nSCHEDULED: <" .. vim.fn.strftime(
-              "%Y-%m-%d %a"
-            ) .. " 09:30>",
-            target = zettel_base .. "/journal.org",
-            datetree = custom_datetree,
-          },
-          mj = {
-            description = "JTF",
-            template = "* JTF :CUST_MEETING:\nSCHEDULED: <" .. vim.fn.strftime("%Y-%m-%d %a") .. " 10:45>",
-            target = zettel_base .. "/journal.org",
-            datetree = custom_datetree,
-          },
-          mn = {
-            description = "Nucleus Blocker",
-            template = "* Nucleus Blocker :CUST_MEETING:\nSCHEDULED: <" .. vim.fn.strftime("%Y-%m-%d %a") .. " 08:30>",
-            target = zettel_base .. "/journal.org",
-            datetree = custom_datetree,
-          },
-          mN = {
-            description = "Nucleus Scrum",
-            template = "* Nucleus Scrum :CUST_MEETING:\nSCHEDULED: <" .. vim.fn.strftime("%Y-%m-%d %a") .. " 13:00>",
-            target = zettel_base .. "/journal.org",
-            datetree = custom_datetree,
-          },
-          mt = {
-            description = "Team meeting",
-            template = "* Team Meeting :CUST_MEETING:\nSCHEDULED: <" .. vim.fn.strftime("%Y-%m-%d %a") .. " 11:30>",
-            target = zettel_base .. "/journal.org",
-            datetree = custom_datetree,
-          },
-          mc = {
-            description = "Checkpoing T1/T2",
-            template = "* Checkpoint T1/T2 :CUST_MEETING:\nSCHEDULED: <" .. vim.fn.strftime("%Y-%m-%d %a") .. " 09:30>",
-            target = zettel_base .. "/journal.org",
-            datetree = custom_datetree,
-          },
-        },
       })
 
       local cmp = require("cmp")
