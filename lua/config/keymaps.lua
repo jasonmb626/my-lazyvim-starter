@@ -79,8 +79,3 @@ local olog = require("plenary.log").new({
   plugin = "me",
   level = "info",
 })
-vim.api.nvim_create_autocmd({ "VimEnter" }, {
-  callback = function(ev)
-    olog.info(vim.inspect(ev))
-  end,
-})
