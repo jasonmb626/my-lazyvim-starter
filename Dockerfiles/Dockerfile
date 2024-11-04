@@ -16,7 +16,7 @@ ENV EDITOR=vim
 RUN zypper -n refresh
 RUN zypper -n install sudo tmux vim git lazygit \
                       python3-pip wl-clipboard \
-                      openssh unzip stow \
+                      openssh unzip stow wget \
                       task timewarrior cmake nim \
                       npm neovim lua53-luarocks \
                       ripgrep fzf fd mercurial \
@@ -41,6 +41,8 @@ RUN sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' 
     && mkdir -p /home/app/.local \
     && git clone https://github.com/tmux-plugins/tpm /home/app/.bin/tpm \
     && git clone https://github.com/jasonmb626/dotfiles-dev.git /home/app/.dotfiles \
+    && curl -L -o /tmp/twtui.rpm  https://github.com/kdheepak/taskwarrior-tui/releases/download/v0.26.3/taskwarrior-tui-0.26.3-1.x86_64.rpm \
+    && zypper -n install --allow-unsigned-rpm /tmp/twtui.rpm && rm /tmp/twtui.rpm \
     && mkdir -p /home/app/.config && touch /home/app/.bash_profile  && cd /home/app/.config && touch .want_timew_hook \
     && mkdir -p /home/app/Documents/zettelkasten && chown -R app:app /home/app && rm -fr /tmp/* \
     && cat >/home/app/.bash_profile <<EOF
