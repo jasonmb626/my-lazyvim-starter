@@ -20,12 +20,13 @@ RUN zypper -n install sudo tmux vim git lazygit \
                       task timewarrior cmake nim \
                       npm neovim lua53-luarocks \
                       ripgrep fzf fd mercurial \
-                      dos2unix awk gcc-c++ libpcre1
+                      dos2unix awk gcc-c++ libpcre1 \
+                      diffutils
+COPY requirements.txt /tmp
 RUN chmod 777 /tmp \
     && git clone https://github.com/jschlatow/taskopen.git /tmp/taskopen \
-    && cd /tmp/taskopen && make PREFIX=/usr && make PREFIX=/usr install
-COPY requirements.txt /tmp
-RUN sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' /etc/passwd \
+    && cd /tmp/taskopen && make PREFIX=/usr && make PREFIX=/usr install \
+    && sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' /etc/passwd \
     && groupadd -g ${GID} app \
     && useradd -u ${UID} -g ${GID} app \
     && mkdir -p /run/tmux/1000 && chown app:app /run/tmux/1000 && chmod 700 /run/tmux/1000 \
