@@ -1,4 +1,4 @@
-FROM opensuse/tumbleweed:latest
+FROM fedora:latest
 
 ARG UID=1000
 ARG GID=1000
@@ -13,37 +13,36 @@ ENV ZETTEL_BASE=/home/app/Documents/zettelkasten
 ENV ORG_TEMPLATES_DIR=/home/app/.config/nvim/org-templates
 ENV EDITOR=vim
 
-RUN zypper -n refresh
-RUN zypper -n install sudo tmux vim git lazygit \
-                      python3-pip wl-clipboard \
-                      openssh unzip stow wget \
-                      task timewarrior cmake nim \
-                      npm neovim lua53-luarocks \
-                      ripgrep fzf fd mercurial \
-                      dos2unix awk gcc-c++ libpcre1 \
-                      diffutils
 COPY requirements.txt /tmp
-RUN chmod 777 /tmp \
-    && git clone https://github.com/jschlatow/taskopen.git /tmp/taskopen \
-    && cd /tmp/taskopen && make PREFIX=/usr && make PREFIX=/usr install \
-    && sed -i 's,root:x:0:0:root:/root:/bin/ash,root:x:0:0:root:/root:/bin/bash,g' /etc/passwd \
-    && groupadd -g ${GID} app \
+RUN echo -e "max_parallel_downloads=10\nfastestmirror=True" >> /etc/dnf/dnf.conf && dnf install -y dnf5 'dnf-command(copr)' && dnf update -y
+RUN chmod 777 /tmp && dnf copr enable atim/lazygit -y \
+     && dnf install -y tmux openssh openssh-server unzip wl-clipboard \
+                       git lazygit stow dos2unix procps-ng \
+                       python3-pip nodejs-npm luarocks \
+                       timew vim neovim emacs-nox pcre \
+                       mercurial fzf fd-find cargo libuuid-devel
+RUN curl -o /tmp/tw3.tgz -L https://github.com/GothenburgBitFactory/taskwarrior/releases/download/v3.3.0/task-3.3.0.tar.gz \
+    && cd /tmp && tar xzvf tw3.tgz && cd task-3.3.0 && cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build \ 
+    && cmake --install build && rm -fr /tmp/tw3.tgz && rm -fr /tmp/task-3.3.0
+RUN curl https://nim-lang.org/choosenim/init.sh -sSf -o /tmp/init.sh && chmod +x /tmp/init.sh && /tmp/init.sh -y \
+    && rm -fr /tmp/init.sh 2>/dev/null && rm -fr /tmp/choosenim-extraction && rm -fr /tmp/choosenim* \
+    && git clone https://github.com/jschlatow/taskopen.git /tmp/taskopen && cd /tmp/taskopen \
+    && PATH=/root/.nimble/bin:$PATH make PREFIX=/usr && sudo make PREFIX=/usr install && rm -fr /root/.nimble
+RUN groupadd -g ${GID} app \
     && useradd -u ${UID} -g ${GID} app \
     && mkdir -p /run/tmux/1000 && chown app:app /run/tmux/1000 && chmod 700 /run/tmux/1000 \
     && mkdir -p /etc/sudoers.d && echo 'app ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers.d/app \
     && touch /run/sshd.pid && chmod 777 /run/sshd.pid \
     && ssh-keygen -A && echo -e 'PasswordAuthentication yes\nPermitEmptyPasswords yes' >> /etc/ssh/sshd_config \
     && ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime \
+    && pip3 install --upgrade pip && pip3 install pynvim pylint tzdata vit && npm i -g neovim \
     && python3 -m venv /home/app/.venvs/app && source /home/app/.venvs/app/bin/activate \
-    && pip3 install --upgrade pip \
     && pip3 install -r /tmp/requirements.txt && rm /tmp/requirements.txt \
     && pip3 install pynvim pylint tzdata vit \
     && npm i -g neovim \
     && mkdir -p /home/app/.local \
     && git clone https://github.com/tmux-plugins/tpm /home/app/.bin/tpm \
     && git clone https://github.com/jasonmb626/dotfiles-dev.git /home/app/.dotfiles \
-    && curl -L -o /tmp/twtui.rpm  https://github.com/kdheepak/taskwarrior-tui/releases/download/v0.26.3/taskwarrior-tui-0.26.3-1.x86_64.rpm \
-    && zypper -n install --allow-unsigned-rpm /tmp/twtui.rpm && rm /tmp/twtui.rpm \
     && mkdir -p /home/app/.config && touch /home/app/.bash_profile  && cd /home/app/.config && touch .want_timew_hook \
     && mkdir -p /home/app/Documents/zettelkasten && chown -R app:app /home/app && rm -fr /tmp/* \
     && cat >/home/app/.bash_profile <<EOF
@@ -67,9 +66,9 @@ RUN echo "app:" | chpasswd -e && touch /home/app/.config/.want_docker_ssh
 
 WORKDIR /home/app/Documents/zettelkasten
 USER app:app
-RUN cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit && stow taskopen \
+RUN rm -f ~/.bashrc && cd ~/.dotfiles && stow bash && stow tmux && stow timew && stow taskw && stow vit && stow taskopen \
     && dos2unix /home/app/.bash_profile && mkdir -p /home/app/.config/nvim
-#RUN touch /home/app/.config/.want_alt_tmux_prefix
+RUN touch /home/app/.config/.want_alt_tmux_prefix
 CMD ["bash"]
 
 #Consider limiting IP ssh access
